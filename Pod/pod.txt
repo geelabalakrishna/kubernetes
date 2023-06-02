@@ -1,0 +1,2 @@
+Create a pod without namespace
+kubectl apply -f pod.yaml

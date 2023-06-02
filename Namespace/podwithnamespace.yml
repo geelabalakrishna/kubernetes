@@ -1,1 +1,25 @@
+---
+# To create a namespace and a simple pod using a YAML
+#To create a namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nodejsapp
+  labels:
+    app: nodejsapp
+ ---
+#create the Pod namespace
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nodejsapp
+  namespace: nodejsapp
+spec:
+  containers:
+  - name: nodejsapp
+    image: gbalakrishna/nodejsapp:v1
+    ports:
+    - containerPort: 3000
+ 
+  
 

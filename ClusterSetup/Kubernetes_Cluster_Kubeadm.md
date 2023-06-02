@@ -1,8 +1,12 @@
 ---
-# kubernetes Cluster Setup using Kubeadm
+# kubernetes Cluster-1.27 Setup using Kubeadm
 ---
- we will setup K8s Cluster on AWS using Ubuntu Instances
+  we will setup K8s Cluster on AWS using Ubuntu Instances
  - Refer https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
+ - here version 
+    - Ubuntu: 
+    - kubernetes Cluster: 1.27
+    - 
  
 To install Kubernetes using kubeadm on Ubuntu, we need to follow a series of steps. Here's a step-by-step guide for Kubernetes installation on Ubuntu using kubeadm
 
@@ -47,13 +51,13 @@ To install Kubernetes using kubeadm on Ubuntu, we need to follow a series of ste
     30000-32767 for NodePort Services
     ```
   ### Setup-4: Run on all nodes of the cluster as root user
-  ### Setup-5: Disable SWAP
+  ### Setup-5: Disable SWAP(All the 3 nodes)
    - Disable swap in order for the kubelet to work properly
    ```
    swapoff -a
    sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
    ```
- ### Setup-6: Install Docker 
+ ### Setup-6: Install Docker(All the 3 nodes)
  -  Docker as the container engine in your Kubernetes cluster
  -  Install Docker on all the machines (nodes) in your Kubernetes cluster. You can use the following commands to install Docker on Ubuntu
  - To install Docker on Ubuntu using the official Docker installation script
@@ -63,7 +67,7 @@ To install Kubernetes using kubeadm on Ubuntu, we need to follow a series of ste
      sudo apt-get upgrade
       ```
       
- ### Setup-7: Download and Run the Docker Installation Script:
+ ### Setup-7: Download and Run the Docker Installation Script:(All the 3 nodes)
  - Download the Docker installation script using the following command:
    
   ```
@@ -85,7 +89,7 @@ To install Kubernetes using kubeadm on Ubuntu, we need to follow a series of ste
      ```
        docker version
        ```
-### Setup-8: Install CNI : cri-dockerd    
+### Setup-8: Install CNI : cri-dockerd(All the 3 nodes)    
 - To install, on a Linux system that uses systemd, and already has Docker Engine installed 
 
 

@@ -1,1 +1,18 @@
+#ResourceQuota is for limiting the total resource consumption of a namespace
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: resourcequotas
+  namespace: nodejsapp
+spec:
+  hard:
+    configmaps: "10" 
+    persistentvolumeclaims: "4" 
+    replicationcontrollers: "20" 
+    secrets: "10" 
+    services: "10"
+ # lilmits the maximum number of configmapsto 10, the maximum Cpersistentvolumeclaims: 4, secrets: 10,services: 10
+ 
+ 
 

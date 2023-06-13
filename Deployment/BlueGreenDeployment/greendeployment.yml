@@ -2,19 +2,19 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: nodejsapp
+  name: pythonapp
   labels:
-    app: nodejsapp
+    app: pythonapp
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nodejsapp
-  namespace: nodejsapp 
+  name: pythonappgreen
+  namespace: pythonapp 
   labels:
-    app: nodejsapp
+    app: pythonapp
     version: v2
-    color: blue
+    color: green
 spec:
   revisionHistoryLimit: 5
   strategy:
@@ -22,16 +22,19 @@ spec:
   replicas: 2
   selector:
     matchLabels:
-      app: nodejsapp
+      app: pythonapp
+      version: v2
+      color: green       
   template:
     metadata:
       labels:
-        app: nodejsapp
+        app: pythonapp
         version: v2
-        color: blue        
+        color: green         
     spec:
       containers:
-      - name: nodejsapp
-        image: gbalakrishna/pythonapp:v1
+      - name: pythonapp
+        image: gbalakrishna/pythonapp:v2
         ports:
-        - containerPort: 3000
+        - containerPort: 5000
+...

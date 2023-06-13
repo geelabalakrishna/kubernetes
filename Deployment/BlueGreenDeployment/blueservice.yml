@@ -1,1 +1,17 @@
-blueservice.yml
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodejsapp
+  namespace: nodejsapp
+  labels:
+    app: nodejsapp  
+spec:
+  type: NodePort
+  selector:
+    version: v1
+  ports:
+    - port: 8090
+      targetPort: 3000
+      nodePort: 30007
+...  

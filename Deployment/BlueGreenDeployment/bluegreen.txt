@@ -1,0 +1,1 @@
+Modify the selector in live-service from v1 to v2 and apply that using kubectl

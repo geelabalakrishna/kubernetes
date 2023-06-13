@@ -1,1 +1,39 @@
-bluedeployment.yml
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nodejsapp
+  labels:
+    app: nodejsapp
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nodejsapp
+  namespace: nodejsapp 
+  labels:
+    app: nodejsapp
+    version: v1
+    color: blue
+spec:
+  revisionHistoryLimit: 5
+  strategy:
+    type: RollingUpdate
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nodejsapp
+  template:
+    metadata:
+      labels:
+        app: nodejsapp
+        version: v1
+        color: blue        
+    spec:
+      containers:
+      - name: nodejsapp
+        image: gbalakrishna/nodejsapp:v1
+        ports:
+        - containerPort: 3000
+...        
+

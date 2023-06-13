@@ -1,34 +1,37 @@
 ---
-#nodeportwithoutnamespace
 apiVersion: v1
-kind: Service
+kind: Namespace
 metadata:
   name: nodejsapp
-   labels:
-    app: nodejsapp 
-  spec:
-  type: NodePort
-  selector:
+  labels:
     app: nodejsapp
-  ports:
-      # By default and for convenience, the `targetPort` is set to the same value as the `port` field.
-    - port: 8090
-      targetPort: 3000
-      
- ---
-#pod
+---
 apiVersion: v1
 kind: Pod
 metadata:
   name: nodejsapp
+  namespace: nodejsapp
   labels:
-    app: nodejsap  
+    app: nodejsap
 spec:
   containers:
-  - name: nodejsapp
-    image: gbalakrishna/nodejsapp:v1
-    ports:
-    - containerPort: 3000
-...    
-    
-    
+    - name: nodejsapp
+      image: gbalakrishna/nodejsapp:v1
+      ports:
+        - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodejsapp
+  namespace: nodejsapp
+  labels:
+    app: nodejsapp
+spec:
+  type: ClusterIP
+  selector:
+    app: nodejsapp
+  ports:
+    - port: 8090
+      targetPort: 3000
+...

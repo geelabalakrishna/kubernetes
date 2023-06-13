@@ -1,0 +1,15 @@
+$ kubectl delete all --all
+
+$ kubectl apply -f ReplicaSet.yml
+
+$ kubectl get pods -o wide -n nodejsapp
+
+$ kubectl get svc
+
+$ kubectl get rs -n nodejsapp
+
+$ kubectl scale rs nodejsapp --replicas 5 -n nodejsapp
+
+$ kubectl scale rs nodejsapp --replicas 3 -n nodejsapp
+
+$ kubectl delete rs nodejsapp -n nodejsapp

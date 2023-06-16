@@ -1,0 +1,26 @@
+echo "apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pythonapp
+  labels:
+    app: pythonapp
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: pythonapp
+  strategy: null
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 0
+    maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: pythonapp
+    spec:
+      containers:
+        - name: pythonapp
+          image: gbalakrishna/pythonapp:v1
+          ports:
+            - containerPort: 5000" | kubectl apply -f -

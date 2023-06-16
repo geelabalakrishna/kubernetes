@@ -1,0 +1,405 @@
+
+Podscommunicate in Kubernetes
+
+Simple pod-to-pod communication
+
+echo "apiVersion: v1
+kind: Pod
+metadata:
+  name: nodejsapp
+  namespace: nodejsapp
+  labels:
+    app: nodejsapp
+spec:
+  containers:
+    - name: nodejsapp
+      image: gbalakrishna/nodejsapp:v1
+      ports:
+        - containerPort: 3000" | kubectl apply -f -
+
+
+echo "apiVersion: v1
+kind: Service
+metadata:
+  name: nodejsapp
+  namespace: nodejsapp
+  labels:
+    app: nodejsapp
+spec:
+  type: NodePort
+  selector:
+    app: nodejsapp
+  ports:
+    - port: 8081
+      targetPort: 3000
+      nodePort: 30007" | kubectl apply -f -
+=================================================
+
+echo "apiVersion: v1
+kind: Pod
+metadata:
+  name: pythonapp
+  namespace: nodejsapp
+  labels:
+    app: pythonapp
+spec:
+  containers:
+    - name: pythonapp
+      image: gbalakrishna/nodejsapp:v1
+      ports:
+        - containerPort: 3000" | kubectl apply -f -
+
+
+
+
+echo "apiVersion: v1
+kind: Service
+metadata:
+  name: pythonapp
+  namespace: nodejsapp
+  labels:
+    app: pythonapp
+spec:
+  type: NodePort
+  selector:
+    app: pythonapp
+  ports:
+    - port: 8090
+      targetPort: 3000
+      nodePort: 30019" | kubectl apply -f -
+
+curl pythonapp.pythonapp.svc.cluster.local:8090
+
+
+# Run kubectl commands inside here
+# e.g. kubectl get all
+> curl 10.43.158.207:8090
+{ "response": "Hello Team" }> 
+> curl pythonapp:8090
+curl: (6) Could not resolve host: pythonapp
+> curl pythonapp.pythonapp.svc.cluster.local:8090
+{ "response": "Hello Team" }> 
+
+
+
+
+
+
+========================================================================
+> kubectl get  all -n nodejsapp -o wide
+NAME            READY   STATUS    RESTARTS   AGE     IP           NODE                                             NOMINATED NODE   READINESS GATES
+pod/nodejsapp   1/1     Running   0          3m16s   10.42.0.54   ip-10-248-21-141.eu-central-1.compute.internal   <none>           <none>
+
+NAME                TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE   SELECTOR
+service/nodejsapp   NodePort   10.43.166.211   <none>        8081:30007/TCP   13m   app=nodejsapp
+
+
+=====================================================================================================
+
+> kubectl describe pod nodejsapp -n nodejsapp 
+
+Name:         nodejsapp
+Namespace:    nodejsapp
+Priority:     0
+Node:         ip-10-248-21-141.eu-central-1.compute.internal/10.248.21.141
+Start Time:   Fri, 16 Jun 2023 13:04:52 +0000
+Labels:       app=nodejsapp
+Annotations:  cni.projectcalico.org/containerID: 8367f3c07a426bcfe44bf8ee8c509a96d0ab58eda7f43bacb7b9c8b3f6a1567a
+              cni.projectcalico.org/podIP: 10.42.0.54/32
+              cni.projectcalico.org/podIPs: 10.42.0.54/32
+Status:       Running
+IP:           10.42.0.54
+IPs:
+  IP:  10.42.0.54
+Containers:
+  nodejsapp:
+    Container ID:   docker://04a2f40e1e4ced628153aad0468c3c9380299185f29f68f282e18b6f9553ab3f
+    Image:          gbalakrishna/nodejsapp:v1
+    Image ID:       docker-pullable://gbalakrishna/nodejsapp@sha256:d8ff5671caac83db7b4c4c61e70f9c7d3dfcf0b260b7130a6bd771b7fb42f325
+    Port:           3000/TCP
+    Host Port:      0/TCP
+    State:          Running
+      Started:      Fri, 16 Jun 2023 13:04:52 +0000
+    Ready:          True
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-fhfmx (ro)
+Conditions:
+  Type              Status
+  Initialized       True 
+  Ready             True 
+  ContainersReady   True 
+  PodScheduled      True 
+Volumes:
+  kube-api-access-fhfmx:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    ConfigMapOptional:       <nil>
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  102s  default-scheduler  Successfully assigned nodejsapp/nodejsapp to ip-10-248-21-141.eu-central-1.compute.internal
+  Normal  Pulled     102s  kubelet            Container image "gbalakrishna/nodejsapp:v1" already present on machine
+  Normal  Created    102s  kubelet            Created container nodejsapp
+  Normal  Started    102s  kubelet            Started container nodejsapp
+============================================================================================================
+
+kubectl describe svc  nodejsapp -n nodejsapp 
+
+
+
+Name:                     nodejsapp
+Namespace:                nodejsapp
+Labels:                   app=nodejsapp
+Annotations:              field.cattle.io/publicEndpoints:
+                            [{"addresses":["10.248.21.141"],"port":30007,"protocol":"TCP","serviceName":"nodejsapp:nodejsapp","allNodes":true}]
+Selector:                 app=nodejsapp
+Type:                     NodePort
+IP Family Policy:         SingleStack
+IP Families:              IPv4
+IP:                       10.43.166.211
+IPs:                      10.43.166.211
+Port:                     <unset>  8081/TCP
+TargetPort:               3000/TCP
+NodePort:                 <unset>  30007/TCP
+Endpoints:                10.42.0.54:3000
+Session Affinity:         None
+External Traffic Policy:  Cluster
+Events:                   <none>
+
+=======================================================
+
+> kubectl get endpoints -n nodejsapp
+NAME        ENDPOINTS         AGE
+nodejsapp   10.42.0.54:3000   11m
+
+=============================================================
+> curl 10.43.166.211:8081
+{ "response": "Hello Team" }> 
+
+
+ curl nodejsapp.nodejsapp.svc.cluster.local:8081
+{ "response": "Hello Team" }> 
+
+curl nodejsapp:8081
+curl: (6) Could not resolve host: nodejsapp
+
+=============================================================
+
+echo "apiVersion: v1
+kind: Pod
+metadata:
+  name: pythonapp
+  namespace: nodejsapp
+  labels:
+    app: pythonapp
+spec:
+  containers:
+    - name: pythonapp
+      image: gbalakrishna/nodejsapp:v1
+      ports:
+        - containerPort: 3000" | kubectl apply -f -
+
+
+echo "apiVersion: v1
+kind: Service
+metadata:
+  name: pythonapp
+  namespace: nodejsapp
+  labels:
+    app: pythonapp
+spec:
+  type: NodePort
+  selector:
+    app: pythonapp
+  ports:
+    - port: 8090
+      targetPort: 3000
+      nodePort: 30019" | kubectl apply -f -
+
+
+======================================================================
+> kubectl get all -n pythonapp -o wide
+NAME            READY   STATUS    RESTARTS   AGE    IP           NODE                                             NOMINATED NODE   READINESS GATES
+pod/pythonapp   1/1     Running   0          134m   10.42.0.37   ip-10-248-21-141.eu-central-1.compute.internal   <none>           <none>
+
+NAME                TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE    SELECTOR
+service/pythonapp   NodePort   10.43.158.207   <none>        8090:30008/TCP   131m   app=pythonapp
+
+
+==========================================================================================================================================================
+
+ kubectl describe pod pythonapp -n pythonapp
+Name:         pythonapp
+Namespace:    pythonapp
+Priority:     0
+Node:         ip-10-248-21-141.eu-central-1.compute.internal/10.248.21.141
+Start Time:   Fri, 16 Jun 2023 10:59:03 +0000
+Labels:       app=pythonapp
+Annotations:  cni.projectcalico.org/containerID: 14950353d4e72df4d4faed0a2f16fd0377c913f008b1a1330ddda80c6526f389
+              cni.projectcalico.org/podIP: 10.42.0.37/32
+              cni.projectcalico.org/podIPs: 10.42.0.37/32
+Status:       Running
+IP:           10.42.0.37
+IPs:
+  IP:  10.42.0.37
+Containers:
+  pythonapp:
+    Container ID:   docker://620e32afe0a76065be6f49305928603bf140971aea47bc50008f33b8750496b5
+    Image:          gbalakrishna/nodejsapp:v1
+    Image ID:       docker-pullable://gbalakrishna/nodejsapp@sha256:d8ff5671caac83db7b4c4c61e70f9c7d3dfcf0b260b7130a6bd771b7fb42f325
+    Port:           3000/TCP
+    Host Port:      0/TCP
+    State:          Running
+      Started:      Fri, 16 Jun 2023 10:59:04 +0000
+    Ready:          True
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-zv2pz (ro)
+Conditions:
+  Type              Status
+  Initialized       True 
+  Ready             True 
+  ContainersReady   True 
+  PodScheduled      True 
+Volumes:
+  kube-api-access-zv2pz:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    ConfigMapOptional:       <nil>
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:                      <none>
+
+
+kubectl describe svc  pythonapp -n pythonapp
+Name:                     pythonapp
+Namespace:                pythonapp
+Labels:                   app=pythonapp
+Annotations:              field.cattle.io/publicEndpoints:
+                            [{"addresses":["10.248.21.141"],"port":30008,"protocol":"TCP","serviceName":"pythonapp:pythonapp","allNodes":true}]
+Selector:                 app=pythonapp
+Type:                     NodePort
+IP Family Policy:         SingleStack
+IP Families:              IPv4
+IP:                       10.43.158.207
+IPs:                      10.43.158.207
+Port:                     <unset>  8090/TCP
+TargetPort:               3000/TCP
+NodePort:                 <unset>  30008/TCP
+Endpoints:                10.42.0.37:3000
+Session Affinity:         None
+External Traffic Policy:  Cluster
+Events:                   <none>
+===================================
+
+kubectl describe endpoints  pythonapp -n pythonapp
+Name:         pythonapp
+Namespace:    pythonapp
+Labels:       app=pythonapp
+Annotations:  endpoints.kubernetes.io/last-change-trigger-time: 2023-06-16T11:02:06Z
+Subsets:
+  Addresses:          10.42.0.37
+  NotReadyAddresses:  <none>
+  Ports:
+    Name     Port  Protocol
+    ----     ----  --------
+    <unset>  3000  TCP
+
+
+=============================================================================================================================================
+
+ curl 10.43.158.207:8090
+{ "response": "Hello Team" }> 
+
+
+
+> curl pythonapp:8090
+curl: (6) Could not resolve host: pythonapp
+
+
+ curl pythonapp.pythonapp.svc.cluster.local:8090
+{ "response": "Hello Team" }> 
+
+
+
+root@nodejsapp:/usr/src/app# curl pythonapp.pythonapp.svc.cluster.local:8090
+{ "response": "Hello Team" }root@nodejsapp:/usr/src/app# 
+
+
+
+
+root@pythonapp:/usr/src/app# curl nodejsapp.nodejsapp.svc.cluster.local:8081
+{ "response": "Hello Team" }root@pythonapp:/usr/src/app# 
+
+root@pythonapp:/usr/src/app# curl 10.43.166.211:8081
+{ "response": "Hello Team" }root@pythonapp:/usr/src/app# 
+
+
+root@nodejsapp:/usr/src/app# curl 10.43.158.207:8090
+{ "response": "Hello Team" }root@nodejsapp:/usr/src/app# 
+
+
+===================================================================================================================================================
+
+i delete the service for nodejsapp service
+
+but i acess the 
+root@nodejsapp:/usr/src/app# curl pythonapp.pythonapp.svc.cluster.local:8090
+{ "response": "Hello Team" }root@nodejsapp:/usr/src/app# 
+
+
+
+
+root@nodejsapp:/usr/src/app# curl 10.42.0.37:3000
+{ "response": "Hello Team" }root@nodejsapp:/usr/src/app# 
+
+
+nodejs service deleted :
+root@pythonapp:/usr/src/app# curl nodejsapp.nodejsapp.svc.cluster.local:8081
+curl: (6) Could not resolve host: nodejsapp.nodejsapp.svc.cluster.local
+root@pythonapp:/usr/src/app# 
+
+
+root@pythonapp:/usr/src/app# curl 10.42.0.37:3000
+{ "response": "Hello Team" }root@pythonapp:/usr/src/app# 
+
+
+==================================================================================================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

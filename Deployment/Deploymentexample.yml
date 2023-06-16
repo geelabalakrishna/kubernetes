@@ -13,7 +13,7 @@ spec:
   type: RollingUpdate
   rollingUpdate:
     maxSurge: 0
-    maxUnavailable: 0
+    maxUnavailable: 1
   template:
     metadata:
       labels:
@@ -24,3 +24,244 @@ spec:
           image: gbalakrishna/pythonapp:v1
           ports:
             - containerPort: 5000" | kubectl apply -f -
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+ echo "apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pythonapp
+  namespace: pythonapp
+  labels:
+    app: pythonapp
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: pythonapp
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 0
+  template:
+    metadata:
+      labels:
+        app: pythonapp
+    spec:
+      containers:
+        - name: pythonapp
+          image: gbalakrishna/pythonapp:v1
+          ports:
+            - containerPort: 5000" | kubectl apply -f -
+
+
+
+
+
+> curl 10.43.170.222:8090
+Welcome> kubectl describe deployment pythonapp -n pythonapp
+Name:                   pythonapp
+Namespace:              pythonapp
+CreationTimestamp:      Fri, 16 Jun 2023 14:48:54 +0000
+Labels:                 app=pythonapp
+Annotations:            deployment.kubernetes.io/revision: 1
+                        field.cattle.io/publicEndpoints:
+                          [{"addresses":["10.248.21.141"],"port":30007,"protocol":"TCP","serviceName":"pythonapp:pythonapp","allNodes":true}]
+Selector:               app=pythonapp
+Replicas:               10 desired | 10 updated | 10 total | 10 available | 0 unavailable
+StrategyType:           RollingUpdate
+MinReadySeconds:        0
+RollingUpdateStrategy:  1 max unavailable, 1 max surge
+Pod Template:
+  Labels:  app=pythonapp
+  Containers:
+   pythonapp:
+    Image:        gbalakrishna/pythonapp:v1
+    Port:         5000/TCP
+    Host Port:    0/TCP
+    Environment:  <none>
+    Mounts:       <none>
+  Volumes:        <none>
+Conditions:
+  Type           Status  Reason
+  ----           ------  ------
+  Available      True    MinimumReplicasAvailable
+  Progressing    True    NewReplicaSetAvailable
+OldReplicaSets:  <none>
+NewReplicaSet:   pythonapp-59588d44dc (10/10 replicas created)
+Events:
+  Type    Reason             Age    From                   Message
+  ----    ------             ----   ----                   -------
+  Normal  ScalingReplicaSet  5m31s  deployment-controller  Scaled up replica set pythonapp-59588d44dc to 10
+
+
+kubectl get pods  -n pythonapp
+NAME                         READY   STATUS    RESTARTS   AGE
+pythonapp-59588d44dc-6cjhq   1/1     Running   0          6m39s
+pythonapp-59588d44dc-blbhj   1/1     Running   0          6m39s
+pythonapp-59588d44dc-clfn9   1/1     Running   0          6m39s
+pythonapp-59588d44dc-dqdm9   1/1     Running   0          6m39s
+pythonapp-59588d44dc-m4dxr   1/1     Running   0          6m39s
+pythonapp-59588d44dc-mltbq   1/1     Running   0          6m39s
+pythonapp-59588d44dc-psw7m   1/1     Running   0          6m39s
+pythonapp-59588d44dc-r2qn5   1/1     Running   0          6m39s
+pythonapp-59588d44dc-rqpxj   1/1     Running   0          6m39s
+pythonapp-59588d44dc-tpd86   1/1     Running   0          6m39s
+
+
+> kubectl get rs  -n pythonapp
+NAME                   DESIRED   CURRENT   READY   AGE
+pythonapp-59588d44dc   10        10        10      7m27s
+
+
+NAME        ENDPOINTS                                                     AGE
+pythonapp   10.42.0.58:5000,10.42.0.59:5000,10.42.0.60:5000 + 7 more...   4m16s
+
+
+
+
+kubectl describe deployment pythonapp -n pythonapp -w 
+
+
+
+Name:                   pythonapp
+Namespace:              pythonapp
+CreationTimestamp:      Fri, 16 Jun 2023 14:48:54 +0000
+Labels:                 app=pythonapp
+Annotations:            deployment.kubernetes.io/revision: 2
+                        field.cattle.io/publicEndpoints:
+                          [{"addresses":["10.248.21.141"],"port":30007,"protocol":"TCP","serviceName":"pythonapp:pythonapp","allNodes":true}]
+Selector:               app=pythonapp
+Replicas:               10 desired | 10 updated | 10 total | 10 available | 0 unavailable
+StrategyType:           RollingUpdate
+MinReadySeconds:        0
+RollingUpdateStrategy:  1 max unavailable, 1 max surge
+Pod Template:
+  Labels:  app=pythonapp
+  Containers:
+   pythonapp:
+    Image:        gbalakrishna/pythonapp:v2
+    Port:         5000/TCP
+    Host Port:    0/TCP
+    Environment:  <none>
+    Mounts:       <none>
+  Volumes:        <none>
+Conditions:
+  Type           Status  Reason
+  ----           ------  ------
+  Available      True    MinimumReplicasAvailable
+  Progressing    True    NewReplicaSetAvailable
+OldReplicaSets:  <none>
+NewReplicaSet:   pythonapp-68b9f6f5cb (10/10 replicas created)
+Events:
+  Type    Reason             Age                From                   Message
+  ----    ------             ----               ----                   -------
+  Normal  ScalingReplicaSet  9m50s              deployment-controller  Scaled up replica set pythonapp-59588d44dc to 10
+  Normal  ScalingReplicaSet  20s                deployment-controller  Scaled up replica set pythonapp-68b9f6f5cb to 1
+  Normal  ScalingReplicaSet  20s                deployment-controller  Scaled down replica set pythonapp-59588d44dc to 9 from 10
+  Normal  ScalingReplicaSet  20s                deployment-controller  Scaled up replica set pythonapp-68b9f6f5cb to 2 from 1
+  Normal  ScalingReplicaSet  15s                deployment-controller  Scaled down replica set pythonapp-59588d44dc to 8 from 9
+  Normal  ScalingReplicaSet  15s                deployment-controller  Scaled up replica set pythonapp-68b9f6f5cb to 3 from 2
+  Normal  ScalingReplicaSet  15s                deployment-controller  Scaled down replica set pythonapp-59588d44dc to 7 from 8
+  Normal  ScalingReplicaSet  15s                deployment-controller  Scaled up replica set pythonapp-68b9f6f5cb to 4 from 3
+  Normal  ScalingReplicaSet  12s                deployment-controller  Scaled down replica set pythonapp-59588d44dc to 6 from 7
+  Normal  ScalingReplicaSet  1s (x12 over 12s)  deployment-controller  (combined from similar events): Scaled down replica set pythonapp-59588d44dc to 0 from 1
+
+
+Happy Bithday Vishwak
+
+10.42.0.69:5000,10.42.0.70:5000,10.42.0.71:5000 + 7 more...   11m
+
+
+kubectl get pods -n pythonapp -w
+
+
+
+kubectl describe deployment pythonapp -n pythonapp -w 
+
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+
+ Normal  ScalingReplicaSet  5m6s                deployment-controller  Scaled up replica set pythonapp-68b9f6f5cb to 10
+  Normal  ScalingReplicaSet  75s                 deployment-controller  Scaled down replica set pythonapp-68b9f6f5cb to 9 from 10
+  Normal  ScalingReplicaSet  75s                 deployment-controller  Scaled up replica set pythonapp-59588d44dc to 1 from 0
+  Normal  ScalingReplicaSet  73s                 deployment-controller  Scaled down replica set pythonapp-68b9f6f5cb to 8 from 9
+  Normal  ScalingReplicaSet  73s                 deployment-controller  Scaled up replica set pythonapp-59588d44dc to 2 from 1
+  Normal  ScalingReplicaSet  72s                 deployment-controller  Scaled down replica set pythonapp-68b9f6f5cb to 7 from 8
+  Normal  ScalingReplicaSet  72s                 deployment-controller  Scaled up replica set pythonapp-59588d44dc to 3 from 2
+  Normal  ScalingReplicaSet  70s                 deployment-controller  Scaled down replica set pythonapp-68b9f6f5cb to 6 from 7
+  Normal  ScalingReplicaSet  70s                 deployment-controller  Scaled up replica set pythonapp-59588d44dc to 4 from 3
+  Normal  ScalingReplicaSet  58s (x12 over 68s)  deployment-controller  (combined from similar events): Scaled up replica set pythonapp-59588d44dc to 10 from 9
+> 
+
+ kubectl get pods -n pythonapp -w
+NAME                         READY   STATUS              RESTARTS   AGE
+pythonapp-59588d44dc-2v9jc   1/1     Running             0          13s
+pythonapp-59588d44dc-5mlxw   1/1     Running             0          6s
+pythonapp-59588d44dc-8zgv6   0/1     ContainerCreating   0          2s
+pythonapp-59588d44dc-g7ns2   1/1     Running             0          10s
+pythonapp-59588d44dc-krl62   1/1     Running             0          8s
+pythonapp-59588d44dc-ncmb5   1/1     Running             0          11s
+pythonapp-59588d44dc-zxj9b   1/1     Running             0          4s
+pythonapp-68b9f6f5cb-fb2fd   1/1     Running             0          4m4s
+pythonapp-68b9f6f5cb-g6p97   1/1     Running             0          4m4s
+pythonapp-68b9f6f5cb-xd67l   1/1     Running             0          4m4s
+pythonapp-59588d44dc-8zgv6   1/1     Running             0          2s
+pythonapp-68b9f6f5cb-fb2fd   1/1     Terminating         0          4m4s
+pythonapp-59588d44dc-2vtr5   0/1     Pending             0          0s
+pythonapp-59588d44dc-2vtr5   0/1     Pending             0          0s
+pythonapp-68b9f6f5cb-fb2fd   1/1     Terminating         0          4m4s
+pythonapp-59588d44dc-2vtr5   0/1     ContainerCreating   0          1s
+pythonapp-59588d44dc-2vtr5   0/1     ContainerCreating   0          1s
+pythonapp-68b9f6f5cb-fb2fd   0/1     Terminating         0          4m5s
+pythonapp-68b9f6f5cb-fb2fd   0/1     Terminating         0          4m5s
+pythonapp-68b9f6f5cb-fb2fd   0/1     Terminating         0          4m5s
+pythonapp-59588d44dc-2vtr5   1/1     Running             0          2s
+pythonapp-68b9f6f5cb-g6p97   1/1     Terminating         0          4m6s
+pythonapp-59588d44dc-h8h85   0/1     Pending             0          0s
+pythonapp-59588d44dc-h8h85   0/1     Pending             0          0s
+pythonapp-68b9f6f5cb-g6p97   1/1     Terminating         0          4m6s
+pythonapp-59588d44dc-h8h85   0/1     ContainerCreating   0          1s
+pythonapp-59588d44dc-h8h85   0/1     ContainerCreating   0          1s
+pythonapp-68b9f6f5cb-g6p97   0/1     Terminating         0          4m7s
+pythonapp-68b9f6f5cb-g6p97   0/1     Terminating         0          4m7s
+pythonapp-68b9f6f5cb-g6p97   0/1     Terminating         0          4m7s
+pythonapp-59588d44dc-h8h85   1/1     Running             0          2s
+pythonapp-68b9f6f5cb-xd67l   1/1     Terminating         0          4m8s
+pythonapp-59588d44dc-2grd7   0/1     Pending             0          0s
+pythonapp-59588d44dc-2grd7   0/1     Pending             0          0s
+pythonapp-68b9f6f5cb-xd67l   1/1     Terminating         0          4m8s
+pythonapp-59588d44dc-2grd7   0/1     ContainerCreating   0          1s
+pythonapp-59588d44dc-2grd7   0/1     ContainerCreating   0          1s
+pythonapp-68b9f6f5cb-xd67l   0/1     Terminating         0          4m9s
+pythonapp-68b9f6f5cb-xd67l   0/1     Terminating         0          4m9s
+pythonapp-68b9f6f5cb-xd67l   0/1     Terminating         0          4m9s
+pythonapp-59588d44dc-2grd7   1/1     Running             0          2s
+
+
+
+
+
+
+
+
+           
+           

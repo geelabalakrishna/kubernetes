@@ -1,1 +1,322 @@
+$ kubectl describe pod testpod1 -n testpod1 
+Name:             testpod1
+Namespace:        testpod1
+Priority:         0
+Service Account:  default
+Node:             minikube/192.168.59.101
+Start Time:       Sat, 17 Jun 2023 23:06:52 +0530
+Labels:           app=testpod1
+Annotations:      <none>
+Status:           Running
+IP:               10.244.0.216
+IPs:
+  IP:  10.244.0.216
+Containers:
+  testpod1:
+    Container ID:   docker://112c8cbf5dfcce9c483ec8ce05c0344ca7ddc3a897226cfd57cba6df7c016521
+    Image:          gbalakrishna/balautils:v1
+    Image ID:       docker-pullable://gbalakrishna/balautils@sha256:98c656da48a3c3c80e6fbb24824d4dfa49e1bcec0f60b695a4e2b2e0378073bc       
+    Port:           80/TCP
+    Host Port:      0/TCP
+    State:          Running
+      Started:      Sat, 17 Jun 2023 23:06:56 +0530
+    Ready:          True
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-9hmlj (ro)
+Conditions:
+  Type              Status
+  Initialized       True
+  Ready             True
+  ContainersReady   True
+  PodScheduled      True
+Volumes:
+  kube-api-access-9hmlj:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    ConfigMapOptional:       <nil>
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  18m   default-scheduler  Successfully assigned testpod1/testpod1 to minikube
+  Normal  Pulled     18m   kubelet            Container image "gbalakrishna/balautils:v1" already present on machine
+  Normal  Created    18m   kubelet            Created container testpod1
+  Normal  Started    18m   kubelet            Started container testpod1
+  
+  
+  $ kubectl describe svc testpod1 -n testpod1
+Name:              testpod1
+Namespace:         testpod1
+Labels:            app=testpod1
+Annotations:       <none>
+Selector:          app=testpod1
+Type:              ClusterIP
+IP Family Policy:  SingleStack
+IP Families:       IPv4
+IP:                10.109.58.10
+IPs:               10.109.58.10
+Port:              <unset>  8080/TCP
+TargetPort:        80/TCP
+Endpoints:         10.244.0.216:80
+Session Affinity:  None
+Events:            <none>
+
+
+===================================================================
+
+
+$ kubectl describe pod testpod2 -n testpod2 
+Name:             testpod2
+Namespace:        testpod2
+Priority:         0
+Service Account:  default
+Node:             minikube/192.168.59.101
+Start Time:       Sat, 17 Jun 2023 23:07:01 +0530
+Labels:           app=testpod2
+Annotations:      <none>
+Status:           Running
+IP:               10.244.0.217
+IPs:
+  IP:  10.244.0.217
+Containers:
+  testpod2:
+    Container ID:   docker://b44e81cd70a6055c6699e5d441129a117cb054039e232f410a15f4e3ad11694b
+    Image:          gbalakrishna/balautils:v2
+    Image ID:       docker-pullable://gbalakrishna/balautils@sha256:eb3b7a41cca2657630361eb89c19e3be6efa0e1170ec873038e653ae6dd50c27       
+    Port:           80/TCP
+    Host Port:      0/TCP
+    State:          Running
+      Started:      Sat, 17 Jun 2023 23:07:04 +0530
+    Ready:          True
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-59qmw (ro)
+Conditions:
+  Type              Status
+  Initialized       True
+  Ready             True
+  ContainersReady   True
+  PodScheduled      True
+Volumes:
+  kube-api-access-59qmw:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    ConfigMapOptional:       <nil>
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  19m   default-scheduler  Successfully assigned testpod2/testpod2 to minikube
+  Normal  Pulled     19m   kubelet            Container image "gbalakrishna/balautils:v2" already present on machine
+  Normal  Created    19m   kubelet            Created container testpod2
+  Normal  Started    19m   kubelet            Started container testpod2
+  
+  
+  
+  $ kubectl describe svc  testpod2 -n testpod2
+Name:              testpod2
+Namespace:         testpod2
+Labels:            app=testpod2
+Annotations:       <none>
+Selector:          app=testpod2
+Type:              ClusterIP
+IP Family Policy:  SingleStack
+IP Families:       IPv4
+IP:                10.106.136.126
+IPs:               10.106.136.126
+Port:              <unset>  8090/TCP
+TargetPort:        80/TCP
+Endpoints:         10.244.0.217:80
+Session Affinity:  None
+Events:            <none>
+================================================================
+Family@BalakrishnaG MINGW64 ~/Desktop/k8s/kubernetes/Deployment/BlueGreenDeployment (main)
+$ kubectl apply -f testpod1.yml 
+namespace/testpod1 created
+pod/testpod1 created
+service/testpod1 created
+
+Family@BalakrishnaG MINGW64 ~/Desktop/k8s/kubernetes/Deployment/BlueGreenDeployment (main)
+$ kubectl apply -f testpod2.yml 
+namespace/testpod2 created
+pod/testpod2 created
+service/testpod2 created
+
+Family@BalakrishnaG MINGW64 ~/Desktop/k8s/kubernetes/Deployment/BlueGreenDeployment (main)
+$ 
+$ kubectl get all -n testpod1 -o wide
+NAME           READY   STATUS    RESTARTS   AGE   IP             NODE       NOMINATED NODE   READINESS GATES
+pod/testpod1   1/1     Running   0          68s   10.244.0.216   minikube   <none>           <none>
+
+NAME               TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE   SELECTOR    
+service/testpod1   ClusterIP   10.109.58.10   <none>        8080/TCP   68s   app=testpod1
+
+Family@BalakrishnaG MINGW64 ~/Desktop/k8s/kubernetes/Deployment/BlueGreenDeployment (main)
+$ kubectl get all -n testpod2 -o wide
+NAME           READY   STATUS    RESTARTS   AGE   IP             NODE       NOMINATED NODE   READINESS GATES
+pod/testpod2   1/1     Running   0          69s   10.244.0.217   minikube   <none>           <none>
+
+NAME               TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE   SELECTOR
+service/testpod2   ClusterIP   10.106.136.126   <none>        8090/TCP   69s   app=testpod2
+
+$ curl testpod1
+curl: (6) Could not resolve host: testpod1
+$ curl testpod2
+curl: (6) Could not resolve host: testpod2
+$ curl testpod1
+curl: (6) Could not resolve host: testpod1
+$ curl testpod2
+curl: (6) Could not resolve host: testpod2
+$ curl testpod1:8080
+curl: (6) Could not resolve host: testpod1
+$ curl testpod2:8090
+curl: (6) Could not resolve host: testpod2
+
+
+
+curl testpod1.testpod1.svc.cluster.local:8080
+curl: (6) Could not resolve host: testpod1.testpod1.svc.cluster.local
+$ 
+
+curl 10.109.58.10:8080
+Hi Balakrishna.G
+
+$ curl 10.106.136.126:8090
+Hi Vishwak.G
+
+
+$ curl 10.244.0.216
+Hi Balakrishna.G
+
+
+$ curl 10.244.0.217
+Hi Vishwak.G
+
+
+$ kubectl exec -it testpod1 bash -n testpod1
+kubectl exec [POD] [COMMAND] is DEPRECATED and will be removed in a future version. Use kubectl exec [POD] -- [COMMAND] instead.
+root@testpod1:/# curl 10.106.136.126:8090           
+Hi Vishwak.G
+root@testpod1:/# curl 10.244.0.217       
+Hi Vishwak.G
+root@testpod1:/# curl testpod2    
+^C
+root@testpod1:/# curl testpod2:8090
+^C
+root@testpod1:/# curl testpod2.testpod2:8090
+Hi Vishwak.G
+root@testpod1:/# curl testpod2.testpod2.svc.cluster.local:8090
+Hi Vishwak.G
+root@testpod1:/#
+
+root@testpod1:/# nslookup testpod2.testpod2
+Server:         10.96.0.10   
+Address:        10.96.0.10#53
+
+Name:   testpod2.testpod2.svc.cluster.local
+Address: 10.106.136.126
+
+
+
+root@testpod1:/# dig  testpod2.testpod2
+
+; <<>> DiG 9.18.12-0ubuntu0.22.04.1-Ubuntu <<>> testpod2.testpod2
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NXDOMAIN, id: 13027
+;; flags: qr rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 1232
+; COOKIE: c96fe3019f5d811d (echoed)
+;; QUESTION SECTION:
+;testpod2.testpod2.             IN      A
+
+;; Query time: 80 msec
+;; SERVER: 10.96.0.10#53(10.96.0.10) (UDP)
+;; WHEN: Sat Jun 17 17:48:19 UTC 2023
+;; MSG SIZE  rcvd: 58
+
+=================================================================================
+
+$ kubectl exec -it testpod2 bash -n testpod2
+kubectl exec [POD] [COMMAND] is DEPRECATED and will be removed in a future version. Use kubectl exec [POD] -- [COMMAND] instead.
+root@testpod2:/# curl 10.244.0.216
+Hi Balakrishna.G
+root@testpod2:/# curl  10.109.58.10:8080
+Hi Balakrishna.G
+root@testpod2:/# curl testpod1:8080
+^C
+root@testpod2:/# curl testpod1.testpod1:8080
+Hi Balakrishna.G
+root@testpod2:/# curl testpod1.testpod1.svc.cluster.local:8080
+Hi Balakrishna.G
+root@testpod2:/#
+
+root@testpod2:/# nslookup testpod1.testpod1.svc.cluster.local
+Server:         10.96.0.10
+Address:        10.96.0.10#53
+
+Name:   testpod1.testpod1.svc.cluster.local
+Address: 10.109.58.10
+
+root@testpod2:/# dig  testpod1.testpod1.svc.cluster.local
+
+; <<>> DiG 9.18.12-0ubuntu0.22.04.1-Ubuntu <<>> testpod1.testpod1.svc.cluster.local
+;; global options: +cmd
+;; Got answer:
+;; WARNING: .local is reserved for Multicast DNS
+;; You are currently testing what happens when an mDNS query is leaked to DNS      
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 38600
+;; flags: qr aa rd; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+;; WARNING: recursion requested but not available
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 1232
+; COOKIE: e573c215f9304bab (echoed)
+;; QUESTION SECTION:
+;testpod1.testpod1.svc.cluster.local. IN        A
+
+;; ANSWER SECTION:
+testpod1.testpod1.svc.cluster.local. 8 IN A     10.109.58.10
+
+;; Query time: 11 msec
+;; SERVER: 10.96.0.10#53(10.96.0.10) (UDP)
+;; WHEN: Sat Jun 17 17:52:50 UTC 2023
+;; MSG SIZE  rcvd: 127
+
+root@testpod2:/#
+
+=======================================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

@@ -1,3 +1,10 @@
+
+root@testpod2:/# cat /etc/resolv.conf 
+nameserver 10.96.0.10
+search testpod2.svc.cluster.local svc.cluster.local cluster.local
+options ndots:5
+root@testpod2:/# 
+
 $ kubectl describe pod testpod1 -n testpod1 
 Name:             testpod1
 Namespace:        testpod1

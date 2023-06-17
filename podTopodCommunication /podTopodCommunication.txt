@@ -68,7 +68,20 @@ Endpoints:         10.244.0.216:80
 Session Affinity:  None
 Events:            <none>
 
+$ kubectl describe endpoints testpod1 -n testpod1
+Name:         testpod1
+Namespace:    testpod1
+Labels:       app=testpod1
+Annotations:  endpoints.kubernetes.io/last-change-trigger-time: 2023-06-17T17:36:56Z
+Subsets:
+  Addresses:          10.244.0.216
+  NotReadyAddresses:  <none>
+  Ports:
+    Name     Port  Protocol
+    ----     ----  --------
+    <unset>  80    TCP
 
+Events:  <none>
 ===================================================================
 
 
@@ -142,6 +155,22 @@ TargetPort:        80/TCP
 Endpoints:         10.244.0.217:80
 Session Affinity:  None
 Events:            <none>
+
+
+kubectl describe endpoints testpod2 -n testpod2
+Name:         testpod2
+Namespace:    testpod2
+Labels:       app=testpod2
+Annotations:  endpoints.kubernetes.io/last-change-trigger-time: 2023-06-17T17:37:05Z
+Subsets:
+  Addresses:          10.244.0.217
+  NotReadyAddresses:  <none>
+  Ports:
+    Name     Port  Protocol
+    ----     ----  --------
+    <unset>  80    TCP
+
+Events:  <none>
 ================================================================
 Family@BalakrishnaG MINGW64 ~/Desktop/k8s/kubernetes/Deployment/BlueGreenDeployment (main)
 $ kubectl apply -f testpod1.yml 

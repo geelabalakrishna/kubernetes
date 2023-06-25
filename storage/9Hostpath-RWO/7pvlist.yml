@@ -1,0 +1,44 @@
+#PV created with hostpath
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-hostpath01
+spec:
+  storageClassName: local-storage-01
+  capacity:
+    storage: 10Mi  #Mi,Gi,Ti,Pi
+  accessModes:
+    - ReadWriteOnce  #ReadWriteMany, ReadOnlyMany
+  persistentVolumeReclaimPolicy: Delete
+  hostPath:
+    path: "/tmp/raja"
+---
+#PV created with hostpath
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-hostpath02
+spec:
+  storageClassName: local-storage-02
+  capacity:
+    storage: 20Mi  #Mi,Gi,Ti,Pi
+  accessModes:
+    - ReadWriteOnce  #ReadWriteMany, ReadOnlyMany
+  persistentVolumeReclaimPolicy: Delete
+  hostPath:
+    path: "/tmp/raja2"
+---
+#PV created with hostpath
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-hostpath03
+spec:
+  storageClassName: local-storage-03
+  capacity:
+    storage: 20Mi  #Mi,Gi,Ti,Pi
+  accessModes:
+    - ReadWriteOnce  #ReadWriteMany, ReadOnlyMany
+  persistentVolumeReclaimPolicy: Delete
+  hostPath:
+    path: "/tmp/raja3"

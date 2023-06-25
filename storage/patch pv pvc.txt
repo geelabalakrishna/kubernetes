@@ -1,0 +1,2 @@
+
+ kubectl patch pv pvc-aeb04fd2-49ab-487a-aa89-1cfd6c868f85 -p '{"spec":{"claimRef": null}}'

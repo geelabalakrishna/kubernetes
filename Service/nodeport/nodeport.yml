@@ -12,7 +12,7 @@ metadata:
   name: nodejsapp
   namespace: nodejsapp
   labels:
-    app: nodejsap
+    app: nodejsapp
 spec:
   containers:
     - name: nodejsapp

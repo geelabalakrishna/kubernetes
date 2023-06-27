@@ -1,0 +1,300 @@
+root@ip-192-168-1-114:~# cri-dockerd --version
+cri-dockerd: command not found
+root@ip-192-168-1-114:~# ls -al
+total 40
+drwx------  7 root root 4096 Jun 27 12:54 .
+drwxr-xr-x 20 root root 4096 Jun 27 12:54 ..
+-rw-------  1 root root  277 Jun 27 12:54 .bash_history
+-rw-r--r--  1 root root 3106 Oct 15  2021 .bashrc
+drwxr-xr-x  3 root root 4096 Jun 27 12:48 .cache
+-rw-r--r--  1 root root  161 Jul  9  2019 .profile
+drwx------  2 root root 4096 Jun 27 12:40 .ssh
+drwxr-xr-x 18 root root 4096 Jun 27 12:52 cri-dockerd
+drwxr-xr-x  3 root root 4096 Jun 27 12:48 go
+drwx------  4 root root 4096 Jun 27 12:40 snap
+root@ip-192-168-1-114:~# cd cri-dockerd/
+root@ip-192-168-1-114:~/cri-dockerd# make cri-dockerd
+GOARCH= go build -trimpath -ldflags "-s -w -buildid=`git log -1 --pretty='%h'` -X github.com/Mirantis/cri-dockerd/cmd/version.Version=0.3.1 -X github.com/Mirantis/cri-dockerd/cmd/version.PreRelease=`grep -q dev <<< "0.3.1" && echo "pre" || echo ""` -X github.com/Mirantis/cri-dockerd/cmd/version.GitCommit=`git log -1 --pretty='%h'`" -o cri-dockerd
+root@ip-192-168-1-114:~/cri-dockerd# mkdir -p /usr/local/bin
+root@ip-192-168-1-114:~/cri-dockerd# install -o root -g root -m 0755 cri-dockerd /usr/local/bin/cri-dockerd
+root@ip-192-168-1-114:~/cri-dockerd# install packaging/systemd/* /etc/systemd/system
+root@ip-192-168-1-114:~/cri-dockerd# sed -i -e 's,/usr/bin/cri-dockerd,/usr/local/bin/cri-dockerd,' /etc/systemd/system/cri-docker.service
+root@ip-192-168-1-114:~/cri-dockerd# systemctl daemon-reload
+root@ip-192-168-1-114:~/cri-dockerd# systemctl enable cri-docker.service
+root@ip-192-168-1-114:~/cri-dockerd# systemctl enable --now cri-docker.socket
+root@ip-192-168-1-114:~/cri-dockerd# cri-dockerd --version
+cri-dockerd 0.3.1 (45a28553)
+root@ip-192-168-1-114:~/cri-dockerd# sudo apt-get update
+Hit:1 http://us-east-1.ec2.archive.ubuntu.com/ubuntu jammy InRelease
+Get:2 http://us-east-1.ec2.archive.ubuntu.com/ubuntu jammy-updates InRelease [119 kB]
+Get:3 http://us-east-1.ec2.archive.ubuntu.com/ubuntu jammy-backports InRelease [108 kB]
+Hit:4 https://download.docker.com/linux/ubuntu jammy InRelease
+Hit:6 http://security.ubuntu.com/ubuntu jammy-security InRelease
+Hit:5 https://packages.cloud.google.com/apt kubernetes-xenial InRelease
+Fetched 226 kB in 1s (237 kB/s)
+Reading package lists... Done
+root@ip-192-168-1-114:~/cri-dockerd# kubeadm version
+kubeadm version: &version.Info{Major:"1", Minor:"27", GitVersion:"v1.27.3", GitCommit:"25b4e43193bcda6c7328a6d147b1fb73a33f1598", GitTreeState:"clean", BuildDate:"2023-06-14T09:52:26Z", GoVersion:"go1.20.5", Compiler:"gc", Platform:"linux/amd64"}
+root@ip-192-168-1-114:~/cri-dockerd# kubeadm init --pod-network-cidr=10.244.0.0/16  --cri-socket=unix:///var/run/cri-dockerd.sock --ignore-preflight-errors=NumCPU,Mem --allow-privileged=true --cloud-provider=aws
+unknown flag: --allow-privileged
+To see the stack trace of this error execute with --v=5 or higher
+root@ip-192-168-1-114:~/cri-dockerd# kubeadm init --pod-network-cidr=10.244.0.0/16  --cri-socket=unix:///var/run/cri-dockerd.sock --ignore-preflight-errors=NumCPU,Mem --allow-privileged=true
+unknown flag: --allow-privileged
+To see the stack trace of this error execute with --v=5 or higher
+root@ip-192-168-1-114:~/cri-dockerd# kubeadm init --pod-network-cidr=10.244.0.0/16  --cri-socket=unix:///var/run/cri-dockerd.sock --ignore-preflight-errors=NumCPU,Mem
+[init] Using Kubernetes version: v1.27.3
+[preflight] Running pre-flight checks
+        [WARNING NumCPU]: the number of available CPUs 1 is less than the required 2
+        [WARNING Mem]: the system RAM (965 MB) is less than the minimum 1700 MB
+[preflight] Pulling images required for setting up a Kubernetes cluster
+[preflight] This might take a minute or two, depending on the speed of your internet connection
+[preflight] You can also perform this action in beforehand using 'kubeadm config images pull'
+W0627 13:01:59.741407    1898 checks.go:835] detected that the sandbox image "registry.k8s.io/pause:3.6" of the container runtime is inconsistent with that used by kubeadm. It is recommended that using "registry.k8s.io/pause:3.9" as the CRI sandbox image.
+[certs] Using certificateDir folder "/etc/kubernetes/pki"
+[certs] Generating "ca" certificate and key
+[certs] Generating "apiserver" certificate and key
+[certs] apiserver serving cert is signed for DNS names [ip-192-168-1-114 kubernetes kubernetes.default kubernetes.default.svc kubernetes.default.svc.cluster.local] and IPs [10.96.0.1 192.168.1.114]
+[certs] Generating "apiserver-kubelet-client" certificate and key
+[certs] Generating "front-proxy-ca" certificate and key
+[certs] Generating "front-proxy-client" certificate and key
+[certs] Generating "etcd/ca" certificate and key
+[certs] Generating "etcd/server" certificate and key
+[certs] etcd/server serving cert is signed for DNS names [ip-192-168-1-114 localhost] and IPs [192.168.1.114 127.0.0.1 ::1]
+[certs] Generating "etcd/peer" certificate and key
+[certs] etcd/peer serving cert is signed for DNS names [ip-192-168-1-114 localhost] and IPs [192.168.1.114 127.0.0.1 ::1]
+[certs] Generating "etcd/healthcheck-client" certificate and key
+[certs] Generating "apiserver-etcd-client" certificate and key
+[certs] Generating "sa" key and public key
+[kubeconfig] Using kubeconfig folder "/etc/kubernetes"
+[kubeconfig] Writing "admin.conf" kubeconfig file
+[kubeconfig] Writing "kubelet.conf" kubeconfig file
+[kubeconfig] Writing "controller-manager.conf" kubeconfig file
+[kubeconfig] Writing "scheduler.conf" kubeconfig file
+[kubelet-start] Writing kubelet environment file with flags to file "/var/lib/kubelet/kubeadm-flags.env"
+[kubelet-start] Writing kubelet configuration to file "/var/lib/kubelet/config.yaml"
+[kubelet-start] Starting the kubelet
+[control-plane] Using manifest folder "/etc/kubernetes/manifests"
+[control-plane] Creating static Pod manifest for "kube-apiserver"
+[control-plane] Creating static Pod manifest for "kube-controller-manager"
+[control-plane] Creating static Pod manifest for "kube-scheduler"
+[etcd] Creating static Pod manifest for local etcd in "/etc/kubernetes/manifests"
+[wait-control-plane] Waiting for the kubelet to boot up the control plane as static Pods from directory "/etc/kubernetes/manifests". This can take up to 4m0s
+[apiclient] All control plane components are healthy after 16.007659 seconds
+[upload-config] Storing the configuration used in ConfigMap "kubeadm-config" in the "kube-system" Namespace
+[kubelet] Creating a ConfigMap "kubelet-config" in namespace kube-system with the configuration for the kubelets in the cluster
+[upload-certs] Skipping phase. Please see --upload-certs
+[mark-control-plane] Marking the node ip-192-168-1-114 as control-plane by adding the labels: [node-role.kubernetes.io/control-plane node.kubernetes.io/exclude-from-external-load-balancers]
+[mark-control-plane] Marking the node ip-192-168-1-114 as control-plane by adding the taints [node-role.kubernetes.io/control-plane:NoSchedule]
+[bootstrap-token] Using token: k741wo.uxv8sahnntw6xlnj
+[bootstrap-token] Configuring bootstrap tokens, cluster-info ConfigMap, RBAC Roles
+[bootstrap-token] Configured RBAC rules to allow Node Bootstrap tokens to get nodes
+[bootstrap-token] Configured RBAC rules to allow Node Bootstrap tokens to post CSRs in order for nodes to get long term certificate credentials
+[bootstrap-token] Configured RBAC rules to allow the csrapprover controller automatically approve CSRs from a Node Bootstrap Token
+[bootstrap-token] Configured RBAC rules to allow certificate rotation for all node client certificates in the cluster
+[bootstrap-token] Creating the "cluster-info" ConfigMap in the "kube-public" namespace
+[kubelet-finalize] Updating "/etc/kubernetes/kubelet.conf" to point to a rotatable kubelet client certificate and key
+[addons] Applied essential addon: CoreDNS
+[addons] Applied essential addon: kube-proxy
+
+Your Kubernetes control-plane has initialized successfully!
+
+To start using your cluster, you need to run the following as a regular user:
+
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+Alternatively, if you are the root user, you can run:
+
+  export KUBECONFIG=/etc/kubernetes/admin.conf
+
+You should now deploy a pod network to the cluster.
+Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
+  https://kubernetes.io/docs/concepts/cluster-administration/addons/
+
+Then you can join any number of worker nodes by running the following on each as root:
+
+kubeadm join 192.168.1.114:6443 --token k741wo.uxv8sahnntw6xlnj \
+        --discovery-token-ca-cert-hash sha256:32879d1e2b436e04eeb3b9d5c9969b2ef1db10b2ddd59dd1f501cab239ff736a
+root@ip-192-168-1-114:~/cri-dockerd# sleep -10m
+sleep: invalid option -- '1'
+Try 'sleep --help' for more information.
+root@ip-192-168-1-114:~/cri-dockerd# sleep --help
+Usage: sleep NUMBER[SUFFIX]...
+  or:  sleep OPTION
+Pause for NUMBER seconds.  SUFFIX may be 's' for seconds (the default),
+'m' for minutes, 'h' for hours or 'd' for days.  NUMBER need not be an
+integer.  Given two or more arguments, pause for the amount of time
+specified by the sum of their values.
+
+      --help     display this help and exit
+      --version  output version information and exit
+
+GNU coreutils online help: <https://www.gnu.org/software/coreutils/>
+Report any translation bugs to <https://translationproject.org/team/>
+Full documentation <https://www.gnu.org/software/coreutils/sleep>
+or available locally via: info '(coreutils) sleep invocation'
+root@ip-192-168-1-114:~/cri-dockerd# apt install sleep
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+E: Unable to locate package sleep
+root@ip-192-168-1-114:~/cri-dockerd# apt-get install sleep
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+E: Unable to locate package sleep
+root@ip-192-168-1-114:~/cri-dockerd# sleeo 2m
+Command 'sleeo' not found, did you mean:
+  command 'sleek' from snap sleek (1.2.8)
+  command 'sleep' from deb coreutils (8.32-4.1ubuntu1)
+See 'snap info <snapname>' for additional versions.
+root@ip-192-168-1-114:~/cri-dockerd# ^C
+root@ip-192-168-1-114:~/cri-dockerd# ping google.com
+PING google.com (172.253.115.102) 56(84) bytes of data.
+64 bytes from bg-in-f102.1e100.net (172.253.115.102): icmp_seq=1 ttl=97 time=2.17 ms
+64 bytes from bg-in-f102.1e100.net (172.253.115.102): icmp_seq=2 ttl=97 time=2.16 ms
+64 bytes from bg-in-f102.1e100.net (172.253.115.102): icmp_seq=3 ttl=97 time=2.19 ms
+64 bytes from bg-in-f102.1e100.net (172.253.115.102): icmp_seq=4 ttl=97 time=2.13 ms
+64 bytes from bg-in-f102.1e100.net (172.253.115.102): icmp_seq=5 ttl=97 time=2.18 ms
+64 bytes from bg-in-f102.1e100.net (172.253.115.102): icmp_seq=6 ttl=97 time=2.38 ms
+64 bytes from bg-in-f102.1e100.net (172.253.115.102): icmp_seq=7 ttl=97 time=2.21 ms
+64 bytes from bg-in-f102.1e100.net (172.253.115.102): icmp_seq=8 ttl=97 time=2.14 ms
+64 bytes from bg-in-f102.1e100.net (172.253.115.102): icmp_seq=9 ttl=97 time=2.16 ms
+64 bytes from bg-in-f102.1e100.net (172.253.115.102): icmp_seq=10 ttl=97 time=2.15 ms
+64 bytes from bg-in-f102.1e100.net (172.253.115.102): icmp_seq=11 ttl=97 time=2.17 ms
+64 bytes from bg-in-f102.1e100.net (172.253.115.102): icmp_seq=12 ttl=97 time=2.20 ms
+64 bytes from bg-in-f102.1e100.net (172.253.115.102): icmp_seq=13 ttl=97 time=2.15 ms
+root@ip-192-168-1-114:~/cri-dockerd# kubectl apply -k "github.com/kubernetes-sigs/aws-ebs-csi-driver/deploy/kubernetes/overlays/stable/?ref=release-1.20"
+serviceaccount/ebs-csi-controller-sa created
+serviceaccount/ebs-csi-node-sa created
+role.rbac.authorization.k8s.io/ebs-csi-leases-role created
+clusterrole.rbac.authorization.k8s.io/ebs-csi-node-role created
+clusterrole.rbac.authorization.k8s.io/ebs-external-attacher-role created
+clusterrole.rbac.authorization.k8s.io/ebs-external-provisioner-role created
+clusterrole.rbac.authorization.k8s.io/ebs-external-resizer-role created
+clusterrole.rbac.authorization.k8s.io/ebs-external-snapshotter-role created
+rolebinding.rbac.authorization.k8s.io/ebs-csi-leases-rolebinding created
+clusterrolebinding.rbac.authorization.k8s.io/ebs-csi-attacher-binding created
+clusterrolebinding.rbac.authorization.k8s.io/ebs-csi-node-getter-binding created
+clusterrolebinding.rbac.authorization.k8s.io/ebs-csi-provisioner-binding created
+clusterrolebinding.rbac.authorization.k8s.io/ebs-csi-resizer-binding created
+clusterrolebinding.rbac.authorization.k8s.io/ebs-csi-snapshotter-binding created
+deployment.apps/ebs-csi-controller created
+poddisruptionbudget.policy/ebs-csi-controller created
+daemonset.apps/ebs-csi-node created
+csidriver.storage.k8s.io/ebs.csi.aws.com created
+root@ip-192-168-1-114:~/cri-dockerd# kubectl get pods
+No resources found in default namespace.
+root@ip-192-168-1-114:~/cri-dockerd# kubectl get ns
+NAME              STATUS   AGE
+default           Active   13m
+kube-flannel      Active   8m26s
+kube-node-lease   Active   13m
+kube-public       Active   13m
+kube-system       Active   13m
+root@ip-192-168-1-114:~/cri-dockerd# kubectl get deployment
+No resources found in default namespace.
+root@ip-192-168-1-114:~/cri-dockerd# kubectl get deployment -n kube-system
+NAME                 READY   UP-TO-DATE   AVAILABLE   AGE
+coredns              2/2     2            2           16m
+ebs-csi-controller   0/2     2            0           3m55s
+root@ip-192-168-1-114:~/cri-dockerd# kubectl get pod -n kube-system
+NAME                                       READY   STATUS             RESTARTS       AGE
+coredns-5d78c9869d-fq95q                   1/1     Running            0              16m
+coredns-5d78c9869d-zkgzx                   1/1     Running            0              16m
+ebs-csi-controller-c69ff5f8d-26klf         6/6     Running            0              2m9s
+ebs-csi-controller-c69ff5f8d-bx84p         6/6     Running            0              2m9s
+ebs-csi-node-mcr49                         3/3     Running            0              2m9s
+ebs-csi-node-nz2lh                         3/3     Running            0              2m9s
+etcd-ip-192-168-1-114                      1/1     Running            0              16m
+kube-apiserver-ip-192-168-1-114            1/1     Running            0              16m
+kube-controller-manager-ip-192-168-1-114   0/1     CrashLoopBackOff   5 (112s ago)   16m
+kube-proxy-86rpt                           1/1     Running            0              7m4s
+kube-proxy-rgqcw                           1/1     Running            0              16m
+kube-scheduler-ip-192-168-1-114            0/1     CrashLoopBackOff   5 (107s ago)   16m
+root@ip-192-168-1-114:~/cri-dockerd# kubectl get pod -n kube-system
+NAME                                       READY   STATUS             RESTARTS        AGE
+coredns-5d78c9869d-fq95q                   1/1     Running            0               17m
+coredns-5d78c9869d-zkgzx                   1/1     Running            0               17m
+ebs-csi-controller-c69ff5f8d-26klf         6/6     Running            0               2m53s
+ebs-csi-controller-c69ff5f8d-bx84p         6/6     Running            0               2m53s
+ebs-csi-node-mcr49                         3/3     Running            0               2m53s
+ebs-csi-node-nz2lh                         3/3     Running            0               2m53s
+etcd-ip-192-168-1-114                      1/1     Running            0               17m
+kube-apiserver-ip-192-168-1-114            1/1     Running            0               17m
+kube-controller-manager-ip-192-168-1-114   0/1     CrashLoopBackOff   5 (2m36s ago)   17m
+kube-proxy-86rpt                           1/1     Running            0               7m48s
+kube-proxy-rgqcw                           1/1     Running            0               17m
+kube-scheduler-ip-192-168-1-114            0/1     CrashLoopBackOff   5 (2m31s ago)   17m
+root@ip-192-168-1-114:~/cri-dockerd# kubectl get pod -n kube-system
+Unable to connect to the server: net/http: TLS handshake timeout
+root@ip-192-168-1-114:~/cri-dockerd# kubectl get pod -n kube-system
+Unable to connect to the server: net/http: TLS handshake timeout
+root@ip-192-168-1-114:~/cri-dockerd# kubectl get pod -n kube-system
+Unable to connect to the server: net/http: TLS handshake timeout
+root@ip-192-168-1-114:~/cri-dockerd# unset http_proxy
+root@ip-192-168-1-114:~/bala# kubectl get pvc
+NAME        STATUS    VOLUME   CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+ebs-claim   Pending                                      ebs-sc         21s
+root@ip-192-168-1-114:~/bala# kubectl get pvc
+root@ip-192-168-1-114:~/bala# kubect get sc
+kubect: command not found
+root@ip-192-168-1-114:~/bala# vim pod.yml
+root@ip-192-168-1-114:~/bala# kubectl apply -f sc.yml
+storageclass.storage.k8s.io/ebs-sc created
+root@ip-192-168-1-114:~/bala# kubectl get pv
+No resources found
+root@ip-192-168-1-114:~/bala# kubectl get pvc
+No resources found in default namespace.
+root@ip-192-168-1-114:~/bala# kubectl apply -f pvc.yml
+persistentvolumeclaim/ebs-claim created
+root@ip-192-168-1-114:~/bala# kubectl apply -f pod.yml
+pod/app created
+root@ip-192-168-1-114:~/bala# kubectl get pvc
+NAME        STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+ebs-claim   Bound    pvc-d8af1683-ee04-4088-894f-1c77c3b9fd96   4Gi        RWO            ebs-sc         22s
+root@ip-192-168-1-114:~/bala# kubectl get pv
+NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM               STORAGECLASS   REASON   AGE
+pvc-d8af1683-ee04-4088-894f-1c77c3b9fd96   4Gi        RWO            Delete           Bound    default/ebs-claim   ebs-sc                  14s
+root@ip-192-168-1-114:~/bala# kubectl get pod -o wide
+NAME   READY   STATUS    RESTARTS   AGE   IP           NODE              NOMINATED NODE   READINESS GATES
+app    1/1     Running   0          34s   10.244.1.6   ip-192-168-1-15   <none>           <none>
+root@ip-192-168-1-114:~/bala# vim pod.yml
+root@ip-192-168-1-114:~/bala# kubectl apply -f pod.yml
+pod/app configured
+root@ip-192-168-1-114:~/bala# kubectl get pod
+NAME   READY   STATUS    RESTARTS   AGE
+app    1/1     Running   0          2m6s
+root@ip-192-168-1-114:~/bala# vim svc.yml
+root@ip-192-168-1-114:~/bala# kubectl apply -f svc.yml
+The Service "hostpathService" is invalid: metadata.name: Invalid value: "hostpathService": a DNS-1035 label must consist of lower case alphanumeric characters or '-', start with an alphabetic character, and end with an alphanumeric character (e.g. 'my-name',  or 'abc-123', regex used for validation is '[a-z]([-a-z0-9]*[a-z0-9])?')
+root@ip-192-168-1-114:~/bala# vim pod.yml
+root@ip-192-168-1-114:~/bala# vim svc.yml
+root@ip-192-168-1-114:~/bala# kubectl apply -f svc.yml
+service/hostpathservice created
+root@ip-192-168-1-114:~/bala# kubectl get svc
+NAME              TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)        AGE
+hostpathservice   NodePort    10.97.79.47   <none>        80:30010/TCP   45s
+kubernetes        ClusterIP   10.96.0.1     <none>        443/TCP        49m
+root@ip-192-168-1-114:~/bala# kubectl exec -it app --/bin/bash
+error: unknown flag: --/bin/bash
+See 'kubectl exec --help' for usage.
+root@ip-192-168-1-114:~/bala# kubectl exec -it app -- /bin/bash
+root@app:/# df -h
+Filesystem      Size  Used Avail Use% Mounted on
+overlay         7.6G  5.1G  2.6G  67% /
+tmpfs            64M     0   64M   0% /dev
+/dev/root       7.6G  5.1G  2.6G  67% /etc/hosts
+shm              64M     0   64M   0% /dev/shm
+/dev/xvdb       3.8G   24K  3.8G   1% /usr/share/nginx/html
+tmpfs           866M   12K  866M   1% /run/secrets/kubernetes.io/serviceaccount
+tmpfs           483M     0  483M   0% /proc/acpi
+tmpfs           483M     0  483M   0% /proc/scsi
+tmpfs           483M     0  483M   0% /sys/firmware
+root@app:/# cd /usr/share/nginx/html
+root@app:/usr/share/nginx/html# vim index.html
+bash: vim: command not found
+root@app:/usr/share/nginx/html# cat > index.html
+Hi Pavan Siva
+root@app:/usr/share/nginx/html# e

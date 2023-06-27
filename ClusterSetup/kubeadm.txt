@@ -1,0 +1,297 @@
+https://github.com/Mirantis/cri-dockerd/releases/download/v${VERSION}/cri-dockerd-${VERSION}.${ARCH}.tgz
+
+4.3-4.1build1
+
+
+https://github.com/Mirantis/cri-dockerd/releases/download/v${VERSION}/cri-dockerd-${VERSION}.${ARCH}.tgz
+
+
+https://github.com/Mirantis/cri-dockerd/releases/download/v0.3.3/cri-dockerd-0.3.3.amd64.tgz
+
+
+
+kubeadm init --pod-network-cidr --cri-socket --apiserver-advertise-address=<ip-address>
+
+
+kubeadm init --apiserver-advertise-address=34.201.101.86 --pod-network-cidr=10.244.0.0/16  --cri-socket=unix:///var/run/cri-dockerd.sock --ignore-preflight-errors=NumCPU,Mem
+
+
+
+[ERROR CRI]: container runtime is not running [Issue Encountered]
+
+$ rm /etc/containerd/config.toml
+$ systemctl restart containerd
+$ kubeadm init
+
+54.204.132.179
+
+
+kubeadm init --apiserver-advertise-address=54.204.132.179 --pod-network-cidr=10.244.0.0/16  --cri-socket=unix:///var/run/cri-dockerd.sock --ignore-preflight-errors=NumCPU,Mem
+
+
+kubeadm config images pull --cri-socket=unix:///var/run/cri-dockerd.sock
+
+
+3.237.94.19
+
+kubeadm init --apiserver-advertise-address=3.237.94.19 --pod-network-cidr=10.244.0.0/16  --cri-socket=unix:///var/run/cri-dockerd.sock --ignore-preflight-errors=NumCPU,Mem
+
+kubeadm init --pod-network-cidr=10.244.0.0/16  --cri-socket=unix:///var/run/cri-dockerd.sock --ignore-preflight-errors=NumCPU,Mem
+
+https://computingforgeeks.com/install-mirantis-cri-dockerd-as-docker-engine-shim-for-kubernetes/
+
+
+
+Your Kubernetes control-plane has initialized successfully!
+
+To start using your cluster, you need to run the following as a regular user:
+
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+Alternatively, if you are the root user, you can run:
+
+  export KUBECONFIG=/etc/kubernetes/admin.conf
+
+You should now deploy a pod network to the cluster.
+Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
+  https://kubernetes.io/docs/concepts/cluster-administration/addons/
+
+Then you can join any number of worker nodes by running the following on each as root:
+
+kubeadm join 172.31.15.40:6443 --token t7zjv2.7gexecpm20wf0g33 \
+        --discovery-token-ca-cert-hash sha256:2c3bae919962aff44072921ee110a2104a0ff036d1a7ead4b64c239de3fa3d08 --cri-socket=unix:///var/run/cri-dockerd.sock --ignore-preflight-errors=NumCPU,Mem
+
+
+sudo su -
+apt update
+apt install make -y
+apt  install golang-go -y
+swapoff -a
+curl -fsSL https://get.docker.com -o install-docker.sh
+sh install-docker.sh
+git clone https://github.com/Mirantis/cri-dockerd.git
+cd cri-dockerd
+make cri-dockerd
+mkdir -p /usr/local/bin
+install -o root -g root -m 0755 cri-dockerd /usr/local/bin/cri-dockerd
+install packaging/systemd/* /etc/systemd/system
+sed -i -e 's,/usr/bin/cri-dockerd,/usr/local/bin/cri-dockerd,' /etc/systemd/system/cri-docker.service
+systemctl daemon-reload
+systemctl enable cri-docker.service
+systemctl enable --now cri-docker.socket
+cri-dockerd --version
+sudo apt-get update
+sudo apt-get install -y apt-transport-https ca-certificates curl
+curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-archive-keyring.gpg
+echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+sudo apt-get update
+sudo apt-get install -y kubelet kubeadm kubectl
+sudo apt-mark hold kubelet kubeadm kubectl
+
+mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+Alternatively, if you are the root user, you can run:
+
+  export KUBECONFIG=/etc/kubernetes/admin.conf
+
+You should now deploy a pod network to the cluster.
+Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
+  https://kubernetes.io/docs/concepts/cluster-administration/addons/
+
+Then you can join any number of worker nodes by running the following on each as root:
+
+kubeadm join 192.168.1.114:6443 --token k741wo.uxv8sahnntw6xlnj \
+        --discovery-token-ca-cert-hash sha256:32879d1e2b436e04eeb3b9d5c9969b2ef1db10b2ddd59dd1f501cab239ff736a --cri-socket=unix:///var/run/cri-dockerd.sock --ignore-preflight-errors=NumCPU,Mem
+
+
+
+
+
+
+
+  1  curl -fsSL https://get.docker.com -o install-docker.sh
+    2  cat install-docker.sh
+    3  sudo sh install-docker.sh
+    4  docker info
+    5  systemctl docker status
+    6  systemctl status docker
+    7  git clone https://github.com/Mirantis/cri-dockerd.git
+    8  cd cri-dockerd
+    9  swapoff -a
+   10  free -m
+   11  apt update
+   12  apt install make
+   13  make cri-dockerd
+   14  ls -al
+   15  go version
+   16  apt update
+   17  apt  install golang-go
+   18  make cri-dockerd
+   19  cri-dockerd --version
+   20  mkdir -p /usr/local/bin
+   21  install -o root -g root -m 0755 cri-dockerd /usr/local/bin/cri-dockerd
+   22  cd /usr/local/bin
+   23  ls -al
+   24  install packaging/systemd/* /etc/systemd/system
+   25  cd ~
+   26  cd cri-dockerd/
+   27  install packaging/systemd/* /etc/systemd/system
+   28  sed -i -e 's,/usr/bin/cri-dockerd,/usr/local/bin/cri-dockerd,' /etc/systemd/system/cri-docker.service
+   29  systemctl daemon-reload
+   30  systemctl enable cri-docker.service
+   31  systemctl enable --now cri-docker.socket
+   32  cri-dockerd --version
+   33  sudo apt-get update
+   34  sudo apt-get install -y apt-transport-https ca-certificates curl
+   35  curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-archive-keyring.gpg
+   36  echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+   37  sudo apt-get update
+   38  sudo apt-get install -y kubelet kubeadm kubectl
+   39  sudo apt-mark hold kubelet kubeadm kubectl
+   40  kubeadm version
+   41  kubelet version
+   42*
+   43  kubelet version
+   44  kubelet --version
+   45  kubeadm init --pod-network-cidr=10.244.0.0/16  --cri-socket=unix:///var/run/cri-dockerd.sock --ignore-preflight-errors=NumCPU,Mem
+   46  mkdir -p $HOME/.kube
+   47  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+   48  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+   49  kubectl get nodes
+   50  kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
+   51  kubectl get nodes
+   52  kubectl get pods
+   53  kubectl get ns
+   54  kubectl get pods -n kube-system
+   55  kubectl get nodes
+   56  history
+
+root@ip-192-168-1-241:~# docker info
+Client: Docker Engine - Community
+ Version:    24.0.2
+ Context:    default
+ Debug Mode: false
+ Plugins:
+  buildx: Docker Buildx (Docker Inc.)
+    Version:  v0.10.5
+    Path:     /usr/libexec/docker/cli-plugins/docker-buildx
+  compose: Docker Compose (Docker Inc.)
+    Version:  v2.18.1
+    Path:     /usr/libexec/docker/cli-plugins/docker-compose
+
+Server:
+ Containers: 0
+  Running: 0
+  Paused: 0
+  Stopped: 0
+ Images: 0
+ Server Version: 24.0.2
+ Storage Driver: overlay2
+  Backing Filesystem: extfs
+  Supports d_type: true
+  Using metacopy: false
+  Native Overlay Diff: true
+  userxattr: false
+ Logging Driver: json-file
+ Cgroup Driver: systemd
+ Cgroup Version: 2
+ Plugins:
+  Volume: local
+  Network: bridge host ipvlan macvlan null overlay
+  Log: awslogs fluentd gcplogs gelf journald json-file local logentries splunk syslog
+ Swarm: inactive
+ Runtimes: io.containerd.runc.v2 runc
+ Default Runtime: runc
+ Init Binary: docker-init
+ containerd version: 3dce8eb055cbb6872793272b4f20ed16117344f8
+ runc version: v1.1.7-0-g860f061
+ init version: de40ad0
+ Security Options:
+  apparmor
+  seccomp
+   Profile: builtin
+  cgroupns
+ Kernel Version: 5.19.0-1025-aws
+ Operating System: Ubuntu 22.04.2 LTS
+ OSType: linux
+ Architecture: x86_64
+ CPUs: 1
+ Total Memory: 965.7MiB
+ Name: ip-192-168-1-241
+ ID: 28c77a11-f3d8-4b92-9125-51d9cdce3c2d
+ Docker Root Dir: /var/lib/docker
+ Debug Mode: false
+ Experimental: false
+ Insecure Registries:
+  127.0.0.0/8
+ Live Restore Enabled: false
+
+
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+Alternatively, if you are the root user, you can run:
+
+  export KUBECONFIG=/etc/kubernetes/admin.conf
+
+You should now deploy a pod network to the cluster.
+Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
+  https://kubernetes.io/docs/concepts/cluster-administration/addons/
+
+Then you can join any number of worker nodes by running the following on each as root:
+
+
+
+
+kubeadm init --pod-network-cidr=10.244.0.0/16  --cri-socket=unix:///var/run/cri-dockerd.sock --ignore-preflight-errors=NumCPU,Mem --allow-privileged=true --cloud-provider=aws
+
+
+
+
+kubeadm join 192.168.1.241:6443 --token 9p60lw.wlnn8s1s0ltxutfe \
+        --discovery-token-ca-cert-hash sha256:1b551a32c96606362b2a87e4f90deb3e9435dbb226f17f768b66c21eeeae00a4 --cri-socket=unix:///var/run/cri-dockerd.sock --ignore-preflight-errors=NumCPU,Mem
+
+--cloud-provider=aws
+
+
+fs-0d39f4f79f951f582.efs.us-east-1.amazonaws.com
+
+
+kubectl apply -k "github.com/kubernetes-sigs/aws-ebs-csi-driver/deploy/kubernetes/overlays/stable/?ref=release-1.20"
+
+
+https://www.nebulaworks.com/insights/posts/leveraging-aws-ebs-for-kubernetes-persistent-volumes/
+
+
+https://github.com/kubernetes-sigs/aws-ebs-csi-driver/tree/master
+
+kubeadm join 192.168.1.114:6443 --token k741wo.uxv8sahnntw6xlnj \
+        --discovery-token-ca-cert-hash sha256:32879d1e2b436e04eeb3b9d5c9969b2ef1db10b2ddd59dd1f501cab239ff736a --ignore-preflight-errors=NumCPU,Mem
+
+
+root@ip-192-168-1-114:~/cri-dockerd# kubectl apply -k "github.com/kubernetes-sigs/aws-ebs-csi-driver/deploy/kubernetes/overlays/stable/?ref=release-1.20"
+serviceaccount/ebs-csi-controller-sa created
+serviceaccount/ebs-csi-node-sa created
+role.rbac.authorization.k8s.io/ebs-csi-leases-role created
+clusterrole.rbac.authorization.k8s.io/ebs-csi-node-role created
+clusterrole.rbac.authorization.k8s.io/ebs-external-attacher-role created
+clusterrole.rbac.authorization.k8s.io/ebs-external-provisioner-role created
+clusterrole.rbac.authorization.k8s.io/ebs-external-resizer-role created
+clusterrole.rbac.authorization.k8s.io/ebs-external-snapshotter-role created
+rolebinding.rbac.authorization.k8s.io/ebs-csi-leases-rolebinding created
+clusterrolebinding.rbac.authorization.k8s.io/ebs-csi-attacher-binding created
+clusterrolebinding.rbac.authorization.k8s.io/ebs-csi-node-getter-binding created
+clusterrolebinding.rbac.authorization.k8s.io/ebs-csi-provisioner-binding created
+clusterrolebinding.rbac.authorization.k8s.io/ebs-csi-resizer-binding created
+clusterrolebinding.rbac.authorization.k8s.io/ebs-csi-snapshotter-binding created
+deployment.apps/ebs-csi-controller created
+poddisruptionbudget.policy/ebs-csi-controller created
+daemonset.apps/ebs-csi-node created
+csidriver.storage.k8s.io/ebs.csi.aws.com created
+$ unset http_proxy
+$ unset https_proxy

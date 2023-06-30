@@ -58,7 +58,7 @@ $ kubectl create namespace office
 
 $kubectl --context=user1-context get pods
 
-[root@rajesh ~]# kubectl --context=user1-context get pods
+# kubectl --context=user1-context get pods
 Error from server (Forbidden): pods is forbidden: User "employee" cannot list resource "pods" in API group "" in the namespace "office"
 # Only we have enabled employee authentication. He has no rights on K8s.
 

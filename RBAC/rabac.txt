@@ -1,0 +1,17 @@
+krishna@ip-192-168-1-114:~/.kube$ kubectl get pods
+error: error loading config file "/home/krishna/.kube/config": yaml: line 10: found a tab character that violates indentation
+krishna@ip-192-168-1-114:~/.kube$ vim config
+krishna@ip-192-168-1-114:~/.kube$ kubectl get pods
+Error from server (Forbidden): pods is forbidden: User "krishna" cannot list resource "pods" in API group "" in the namespace "prod"
+krishna@ip-192-168-1-114:~/.kube$ kubectl get pod -n prod
+Error from server (Forbidden): pods is forbidden: User "krishna" cannot list resource "pods" in API group "" in the namespace "prod"
+krishna@ip-192-168-1-114:~/.kube$ kubectl get pods -n prod
+Error from server (Forbidden): pods is forbidden: User "krishna" cannot list resource "pods" in API group "" in the namespace "prod"
+krishna@ip-192-168-1-114:~/.kube$ kubectl version --short
+Flag --short has been deprecated, and will be removed in the future. The --short output will become the default.
+Client Version: v1.27.3
+Kustomize Version: v5.0.1
+Server Version: v1.27.3
+krishna@ip-192-168-1-114:~/.kube$ kubectl get pods -n prod
+No resources found in prod namespace.
+krishna@ip-192-168-1-114:~/.kube$ vim config

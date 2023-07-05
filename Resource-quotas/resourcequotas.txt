@@ -1,3 +1,0 @@
-In Kubernetes, resource quotas are used to limit and monitor the amount of compute resources (such as CPU and memory) that can be consumed by objects within a namespace. 
-They provide a way to control and allocate resources among different applications or teams running in the cluster.
-Resource quotas are defined at the namespace level and can be created using Kubernetes manifests or through the command-line interface (kubectl).

@@ -1,1 +1,0 @@
-Modify the selector in  blueservice from v1 to v2 and apply that using kubectl

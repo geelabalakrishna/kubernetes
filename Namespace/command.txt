@@ -1,3 +1,0 @@
-kubectl apply -f  podwithnamespace.yml
-kubectl  get pod -n podwithnamespace
-

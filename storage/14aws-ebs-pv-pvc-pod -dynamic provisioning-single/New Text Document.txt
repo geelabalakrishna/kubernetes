@@ -1,0 +1,27 @@
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: awsgp2retain
+provisioner: kubernetes.io/aws-ebs
+reclaimPolicy: Retain
+parameters:
+  zone: us-east-1a
+  #zones: us-east-1a, us-east-1b
+  type: gp2
+  fsType: ext4
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: auto-assign-pv-retain
+spec:
+  storageClassName: awsgp2retain
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+
+ kubectl patch pv pvc-aeb04fd2-49ab-487a-aa89-1cfd6c868f85 -p '{"spec":{"claimRef": null}}'

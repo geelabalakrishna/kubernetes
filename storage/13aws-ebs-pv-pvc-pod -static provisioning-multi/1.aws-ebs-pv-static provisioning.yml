@@ -1,0 +1,49 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: c
+  labels:
+    type: ebs-pv1
+spec:
+  persistentVolumeReclaimPolicy: Delete
+  capacity:
+    storage: 2Gi
+  accessModes:
+  - ReadWriteOnce
+  awsElasticBlockStore:
+    volumeID: vol-04180df2e5277b4ea
+    fsType: ext4
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: ebs-pv2
+  labels:
+    type: ebs-pv2
+spec:
+  persistentVolumeReclaimPolicy: Delete
+  capacity:
+    storage: 2Gi
+  accessModes:
+  - ReadWriteOnce
+  awsElasticBlockStore:
+    volumeID: vol-04180df2e5277b4ea
+    fsType: ext4
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: ebs-pv3
+  labels:
+    type: ebs-pv3
+spec:
+  persistentVolumeReclaimPolicy: Retain
+  capacity:
+    storage: 2Gi
+  accessModes:
+  - ReadWriteOnce
+  awsElasticBlockStore:
+    volumeID: vol-04180df2e5277b4ea
+    fsType: ext4
+

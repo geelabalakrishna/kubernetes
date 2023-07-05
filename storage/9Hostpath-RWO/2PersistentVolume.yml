@@ -1,0 +1,14 @@
+#PV created with hostpath
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-hostpath
+spec:
+  storageClassName: local-storage
+  capacity:
+    storage: 10Mi  #Mi,Gi,Ti,Pi
+  accessModes:
+    - ReadWriteOnce  #ReadWriteMany, ReadOnlyMany
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: "/tmp/raja"

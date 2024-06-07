@@ -46,3 +46,64 @@ spec:
   - name: config
     configMap:
       name: fortune-config
+---
+ssh-keygen
+cd ~/.ssh/
+kubectl create cm sshcm --from-file=.
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: fortune-configmap-volume
+spec:
+  containers:
+  - image: nginx:alpine
+    name: web-server
+    volumeMounts:
+    - name: config
+      mountPath: /tmp/ssh
+      readOnly: true
+    ports:
+      - containerPort: 80
+        name: http
+        protocol: TCP
+  volumes:
+  - name: config
+    configMap:
+      name: sshcm
+
+  ---
+
+pod-configmap-volume-with-items
+hide remaining files 
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: fortune-configmap-volume
+spec:
+  containers:
+  - image: nginx:alpine
+    name: web-server
+    volumeMounts:
+    - name: config
+      mountPath: /tmp/ssh
+      readOnly: true
+    ports:
+      - containerPort: 80
+        name: http
+        protocol: TCP
+  volumes:
+  - name: config
+    configMap:
+      name: sshcm
+      items:
+      - key: id_rsa.pub
+        path: pubkey.pub
+
+==============================================
+
+
+
+
+  

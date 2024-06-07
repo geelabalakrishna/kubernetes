@@ -54,7 +54,25 @@ spec:
   restartPolicy: Never
 
 kubectl logs dapi-test-pod
+==============================
 
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: dapi-test-pod
+spec:
+  containers:
+    - name: test-container
+      image: registry.k8s.io/busybox
+      command: [ "/bin/sh", "-c", "env" ]
+    env:
+    - name: INTERVAL
+      valueFrom: 
+        configMapKeyRef:
+          name: fortune-config
+          key: sleep-interval
+          optional: true
 =========================================================================================================
 
 

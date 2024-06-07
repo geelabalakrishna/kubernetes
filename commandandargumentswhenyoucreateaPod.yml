@@ -1,0 +1,77 @@
+Define a command and arguments when you create a Pod
+
+
+
+FROM ubuntu:latest
+
+RUN apt-get update ; apt-get -y install fortune
+ADD fortuneloop.sh /bin/fortuneloop.sh
+
+ENTRYPOINT ["/bin/fortuneloop.sh"]
+CMD ["10"]
+
+
+#!/bin/bash
+trap "exit" SIGINT
+
+INTERVAL=$1
+echo Configured to generate new fortune every $INTERVAL seconds
+
+mkdir -p /var/htdocs
+
+while :
+do
+  echo $(date) Writing fortune to /var/htdocs/index.html
+  /usr/games/fortune > /var/htdocs/index.html
+  sleep $INTERVAL
+done
+
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: fortune2s
+spec:
+  containers:
+  - image: luksa/fortune:args
+    args: ["2"]
+    name: html-generator
+    volumeMounts:
+    - name: html
+      mountPath: /var/htdocs
+  - image: nginx:alpine
+    name: web-server
+    volumeMounts:
+    - name: html
+      mountPath: /usr/share/nginx/html
+      readOnly: true
+    ports:
+    - containerPort: 80
+      protocol: TCP
+  volumes:
+  - name: html
+    emptyDir: {}
+
+
+
+=====
+apiVersion: v1
+kind: Pod
+metadata:
+  name: command-demo
+  labels:
+    purpose: demonstrate-command
+spec:
+  containers:
+  - name: command-demo-container
+    image: debian
+    command: ["printenv"]
+    args: ["HOSTNAME", "KUBERNETES_PORT"]
+  restartPolicy: OnFailure
+
+
+env:
+- name: MESSAGE
+  value: "hello world"
+command: ["/bin/echo"]
+args: ["$(MESSAGE)"]

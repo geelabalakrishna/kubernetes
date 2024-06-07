@@ -104,6 +104,31 @@ spec:
 ==============================================
 
 
+mount a specific file 
+
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: fortune-configmap-volume
+spec:
+  containers:
+  - image: nginx:alpine
+    name: web-server
+    volumeMounts:
+    - name: config
+      mountPath: /tmp/ssh
+      subPath: id_rsa.pub
+      readOnly: true
+    ports:
+      - containerPort: 80
+        name: http
+        protocol: TCP
+  volumes:
+  - name: config
+    configMap:
+      name: sshcm
+
 
 
   

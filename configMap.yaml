@@ -129,6 +129,42 @@ spec:
     configMap:
       name: sshcm
 
+===============================================
+# configmap-with-777-permissions-
+
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: fortune-configmap-volume
+spec:
+  containers:
+  - image: nginx:alpine
+    name: web-server
+    volumeMounts:
+    - name: config
+      mountPath: /tmp/id_rsa.pub
+      subPath: id_rsa.pub
+      readOnly: true
+    ports:
+      - containerPort: 80
+        name: http
+        protocol: TCP
+  volumes:
+  - name: config
+    configMap:
+      name: sshcm
+      defaultMode: 0777
+
+root@instance-20240607-051755:~/kubeadm-scripts/scripts# kubectl exec -it fortune-configmap-volume -- sh
+/ # cd tmp/
+/tmp # ls -al
+total 12
+drwxrwxrwt    1 root     root          4096 Jun  7 10:31 .
+dr-xr-xr-x    1 root     root          4096 Jun  7 10:31 ..
+-rwxrwxrwx    1 root     root           583 Jun  7 10:31 id_rsa.pub
+=========================================================================================================
+
 
 
   

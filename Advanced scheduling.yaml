@@ -222,3 +222,56 @@ spec:
         - "99999"
         image: busybox
         name: main
+=========================
+
+# podAffinity
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubia-1
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: kubia
+  template:
+    metadata:
+      name: kubia
+      labels:
+        app: kubia
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname:  instance-20240608-081441  
+      containers:
+      - image: luksa/kubia:v1
+        name: nodejs
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubia-2
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      env: kubia-1
+  template:
+    metadata:
+      labels:
+        env: kubia-1
+    spec:
+      affinity:
+          podAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values: [kubia]
+              topologyKey: kubernetes.io/hostname
+      containers:
+      - image: luksa/kubia:v1
+        name: nodejs
+===================================================

@@ -1,0 +1,224 @@
+# Advanced scheduling
+---
+# node selector:
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubia-1
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: kubia
+  template:
+    metadata:
+      name: kubia
+      labels:
+        app: kubia
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname:  instance-20240608-081441  
+      containers:
+      - image: luksa/kubia:v1
+        name: nodejs
+---
+# taint and tolerations: 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubia
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: kubia
+  template:
+    metadata:
+      name: kubia
+      labels:
+        app: kubia
+    spec:
+      tolerations:
+      - key: node-type
+        operator: Equal
+        value: production
+        effect: NoSchedule
+      containers:
+      - image: luksa/kubia:v1
+        name: nodejs
+---
+# NoExecute
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubia-1
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: kubia
+  template:
+    metadata:
+      name: kubia
+      labels:
+        app: kubia
+    spec:
+      tolerations:
+      - key: node-type
+        operator: Equal
+        value: nonproduction
+        effect: NoExecute
+      containers:
+      - image: luksa/kubia:v1
+        name: nodejs
+---
+#   tolerationSeconds: 3600
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubia-1
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: kubia
+  template:
+    metadata:
+      name: kubia
+      labels:
+        app: kubia
+    spec:
+      tolerations:
+      - key: node-type
+        operator: Equal
+        value: nonproduction
+        effect: NoExecute
+        tolerationSeconds: 300 # 5 mintues 
+      containers:
+      - image: luksa/kubia:v1
+        name: nodejs
+---
+# nodeAffinity r
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubia-1
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: kubia
+  template:
+    metadata:
+      name: kubia
+      labels:
+        app: kubia
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values: ["instance-20240608-081441"]
+      containers:
+      - image: luksa/kubia:v1
+        name: nodejs
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubia-1
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: kubia
+  template:
+    metadata:
+      name: kubia
+      labels:
+        app: kubia
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingRequiredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                - key: bala
+                  operator: In
+                  values: ["krishna"]
+      containers:
+      - image: luksa/kubia:v1
+        name: nodejs
+---
+# requiredDuringSchedulingRequiredDuringExecution:
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubia-1
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: kubia
+  template:
+    metadata:
+      name: kubia
+      labels:
+        app: kubia
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingRequiredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values: ["instance-20240608-081441"]
+      containers:
+      - image: luksa/kubia:v1
+        name: nodejs
+# Error from server (BadRequest): error when creating "5.yaml": Deployment in version "v1" 
+# cannot be handled as a Deployment: strict decoding error: 
+# unknown field "spec.template.spec.affinity.nodeAffinity.requiredDuringSchedulingRequiredDuringExecution"
+---
+# preferredDuringSchedulingIgnoredDuringExecution:
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pref
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: pref
+  template:
+    metadata:
+      labels:
+        app: pref
+    spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 80
+            preference:
+              matchExpressions:
+              - key: bala
+                operator: In
+                values: ["krishna"]
+          - weight: 20
+            preference:
+              matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values: ["instance-20240608-081441"]
+      containers:
+      - args:
+        - sleep
+        - "99999"
+        image: busybox
+        name: main

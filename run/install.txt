@@ -1,0 +1,37 @@
+https://stackoverflow.com/questions/66894200/error-message-go-go-mod-file-not-found-in-current-directory-or-any-parent-dire
+
+yum install runc 
+yum install go
+go env -w GO111MODULE=auto
+
+mkdir bala
+cd bala
+runc spec #config.json
+
+vim krishna.go
+package main
+
+import "fmt"
+
+func main() {
+    fmt.Println("hello krishna")
+}
+
+go build -o krishna
+vim config.json #####  arg /krishna 
+
+mkdir rootfs 
+mv krishna to rootfs
+
+runc create bala
+
+runc list
+
+lsns
+
+nsenter -u -n -t 1250
+
+
+
+
+
